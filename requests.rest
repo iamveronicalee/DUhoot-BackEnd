@@ -1,0 +1,32 @@
+GET http://localhost:9000/auth/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjIzMDE5NDE2MTEiLCJ1c2VySWQiOiJhMjY1ZDU2Yi05OGIwLWU5MTEtYjFhZi1kOGQzODVmY2U3OWUiLCJiaW51c2lhbklkIjoiYTI2NWQ1NmItOThiMC1lOTExLWIxYWYtZDhkMzg1ZmNlNzllIiwiaWF0IjoxNjU1MTAxMjc5fQ.JRbYyX7AaDmK8e8ZAb85JzxZbVdemlGKhvOsUrtQaLI
+
+###
+POST http://localhost:9000/auth/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjIzMDE5NDE2MTEiLCJ1c2VySWQiOiJhMjY1ZDU2Yi05OGIwLWU5MTEtYjFhZi1kOGQzODVmY2U3OWUiLCJiaW51c2lhbklkIjoiYTI2NWQ1NmItOThiMC1lOTExLWIxYWYtZDhkMzg1ZmNlNzllIiwiaWF0IjoxNjU1MTAxMjc5fQ.JRbYyX7AaDmK8e8ZAb85JzxZbVdemlGKhvOsUrtQaLI"
+}
+###
+DELETE http://localhost:9000/auth/logout
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IjIzMDE5NDE2MTEiLCJ1c2VySWQiOiJhMjY1ZDU2Yi05OGIwLWU5MTEtYjFhZi1kOGQzODVmY2U3OWUiLCJiaW51c2lhbklkIjoiYTI2NWQ1NmItOThiMC1lOTExLWIxYWYtZDhkMzg1ZmNlNzllIiwiaWF0IjoxNjU1MTAxMjc5fQ.JRbYyX7AaDmK8e8ZAb85JzxZbVdemlGKhvOsUrtQaLI"
+}
+
+###
+POST http://localhost:9000/auth/login
+Content-Type: application/json
+
+{
+    "username": "2301941611",
+    "password": "b!Nu$28072001"
+}
+
+###
+POST http://localhost:9000/refresh_token
+Cookie: "jid=asdfadf"
+
+###
