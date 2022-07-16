@@ -11,6 +11,8 @@ import { QuizParticipant } from "./QuizParticipant";
 
 @ObjectType()
 @Entity("User")
+
+
 export class User extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()

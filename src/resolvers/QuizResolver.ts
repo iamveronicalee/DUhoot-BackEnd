@@ -23,7 +23,9 @@ export class QuizResolver {
         createdAt: currentDate,
         updatedAt: currentDate,
         creatorId: creator?.id,
+        isStart : false
       });
+
       await quiz.save();
       return quiz;
     } catch (err) {
@@ -38,6 +40,14 @@ export class QuizResolver {
     if (!quiz) throw new Error("Quiz not found!");
     return quiz;
   }
+
+  @Mutation(()=> [Quiz!])
+  getPersonQuizList(@Arg("userId") userId : number){
+    const quizList = Quiz.find({ where: { creatorId : userId }})
+    return quizList;
+  }
+
+
 
   @Mutation(() => Boolean)
   async updateQuiz(@Arg("data") data: UpdateQuizInput) {
@@ -63,20 +73,36 @@ export class QuizResolver {
     return true;
   }
 
+  @Mutation(()=> [QuizDetail!])
+  async getAllQuizDetailById(@Arg("quizId") quizId : number){
+
+    let res = await AppDataSource.getRepository(QuizDetail)
+    .createQueryBuilder("quizDetail")
+    .leftJoinAndSelect("quizDetail.question", "question")
+    .where({
+      quizId : quizId
+    }).getMany()
+
+    return res;
+  }
+
   @Mutation(() => QuizDetail)
   async createQuizDetail(
     @Arg("quizId") quizId: number,
     @Arg("data") data: CreateQuestionInput
   ) {
+
     const question = Question.create({
       questionDescription: data.questionDescription,
     });
+    
     await question.save();
 
     const detail = QuizDetail.create({
       quizId: quizId,
-      questionId: question.id,
+      question : question,
     });
+
     await detail.save();
 
     let len = data.options.length;

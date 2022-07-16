@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { Question } from "./Question";
+import { QuizDetail } from "./QuizDetail";
 
 @ObjectType()
 @Entity("QuestionOption")
@@ -17,16 +18,16 @@ export class QuestionOption extends BaseEntity {
   id: number;
 
   @Field()
+  @Column({ name: "question_id" })
+  questionId!: number;
+
+  @Field()
   @Column({ name: "option_description" })
   optionDescription: string;
 
   @Field()
   @Column({ name: "is_answer" })
   isAnswer: boolean;
-
-  @Field()
-  @Column({ name: "question_id" })
-  questionId!: number;
 
   @Field(() => Question)
   question!: Question;

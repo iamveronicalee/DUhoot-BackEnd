@@ -3,7 +3,9 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { QuestionOption } from "./QuestionOption";
@@ -16,13 +18,15 @@ export class Question extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field(()=> QuizDetail)
+  @OneToOne(() => QuizDetail, quizDetail => quizDetail.question)
+  quizDetail: QuizDetail;
+
   @Field()
   @Column({ name: "question_description" })
   questionDescription: string;
 
+  @Field(()=> [QuestionOption])
   @OneToMany(() => QuestionOption, (option) => option.questionConnection)
   optionConnection!: Promise<QuestionOption[]>;
-
-  @OneToMany(() => QuizDetail, (detail) => detail.questionConnection)
-  detailConnection!: Promise<QuizDetail[]>;
 }
