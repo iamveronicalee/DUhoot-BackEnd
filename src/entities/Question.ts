@@ -3,7 +3,9 @@ import {
   BaseEntity,
   Column,
   Entity,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
 import { QuestionOption } from "./QuestionOption";
@@ -23,6 +25,6 @@ export class Question extends BaseEntity {
   @OneToMany(() => QuestionOption, (option) => option.questionConnection)
   optionConnection!: Promise<QuestionOption[]>;
 
-  @OneToMany(() => QuizDetail, (detail) => detail.questionConnection)
-  detailConnection!: Promise<QuizDetail[]>;
+  @OneToOne(() => QuizDetail, (quizDetail) => quizDetail.question)
+  quizDetail: QuizDetail;
 }

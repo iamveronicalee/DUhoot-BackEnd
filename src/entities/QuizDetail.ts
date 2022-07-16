@@ -1,5 +1,12 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryColumn,
+} from "typeorm";
 import { Quiz } from "./Quiz";
 import { Question } from "./Question";
 
@@ -20,9 +27,7 @@ export class QuizDetail extends BaseEntity {
   @JoinColumn({ name: "quiz_id" })
   quizConnection!: Promise<Quiz>;
 
-  @Field(() => Question)
-  question!: Question;
-  @ManyToOne(() => Question, (question) => question.detailConnection)
+  @OneToOne(() => Question, (question) => question.quizDetail)
   @JoinColumn({ name: "question_id" })
-  questionConnection!: Promise<Question>;
+  question: Question;
 }

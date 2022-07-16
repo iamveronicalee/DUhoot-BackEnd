@@ -20,19 +20,19 @@ export class QuizParticipant extends BaseEntity {
 
   @Field()
   @Column({ name: "quiz_id" })
-  quizId: number;
+  quizId!: number;
 
   @Field()
   @Column({ name: "participant_id" })
-  participantId: number;
+  participantId!: number;
 
   @Field()
   @Column()
-  score: number;
+  score!: number;
 
   @Field()
   @CreateDateColumn({ name: "participate_date" })
-  participateDate: Date;
+  participateDate!: Date;
 
   @Field(() => Quiz)
   quiz!: Quiz;

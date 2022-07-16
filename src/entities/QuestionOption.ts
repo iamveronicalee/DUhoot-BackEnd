@@ -14,15 +14,15 @@ import { Question } from "./Question";
 export class QuestionOption extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Field()
   @Column({ name: "option_description" })
-  optionDescription: string;
+  optionDescription!: string;
 
   @Field()
   @Column({ name: "is_answer" })
-  isAnswer: boolean;
+  isAnswer!: boolean;
 
   @Field()
   @Column({ name: "question_id" })
