@@ -32,9 +32,8 @@ export class User extends BaseEntity {
   @OneToMany(() => Quiz, (quiz) => quiz.creatorConnection)
   quizConnection!: Promise<Quiz[]>;
 
-  @OneToMany(
-    () => QuizParticipant,
-    (quizParticipant) => quizParticipant.participantConnection
+  @OneToMany(() => QuizParticipant,
+    quizParticipant => quizParticipant.participantConnection
   )
   quizParticipantConnection!: Promise<QuizParticipant[]>;
 }

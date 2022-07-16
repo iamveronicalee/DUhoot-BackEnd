@@ -25,7 +25,8 @@ export class QuizResolver {
         createdAt: currentDate,
         updatedAt: currentDate,
         creatorId: creator?.id,
-        isStart: false
+        isStart: false,
+        isFinished : false
       });
 
       await quiz.save();
@@ -88,6 +89,20 @@ export class QuizResolver {
     return true;
   }
 
+  @Mutation(() => [QuizParticipant])
+  async getAllQuizParticipant(@Arg("userId") userId : number){
+
+    let res = await AppDataSource.getRepository(QuizParticipant)
+    .createQueryBuilder("qp")
+    .leftJoinAndSelect("qp.quizConnection", "quizConnection")
+    .where({
+      participantId : userId
+    }).getMany()
+
+    // console.log(JSON.stringify(res))
+    return res;
+  }
+
   @Mutation(()=> [QuizDetail!])
   async getAllQuizDetailById(@Arg("quizId") quizId : number){
 
@@ -134,11 +149,26 @@ export class QuizResolver {
     return detail;
   }
 
-  @Mutation(() => QuizParticipant)
+
+
+  @Mutation(() => Boolean)
   async createQuizParticipant(
     @Arg("quizId") quizId: number,
     @Arg("participantId") participantId: number
   ) {
+
+    let quiz = await Quiz.findOne({
+      where : {
+        id : quizId
+      }
+    })
+
+    // klo quiz gaada gabisa
+    if (!quiz) return false;
+
+    // klo udah dimulai gabisa join
+    if (quiz.isStart == true) return false;
+
     const date = new Date();
     const quizParticipant = QuizParticipant.create({
       quizId: quizId,
@@ -147,6 +177,8 @@ export class QuizResolver {
       participateDate: date,
     });
     await quizParticipant.save();
+
+    return true;
   }
 
   @Mutation(() => String)
