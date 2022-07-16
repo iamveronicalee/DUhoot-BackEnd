@@ -7,4 +7,7 @@ export class UpdateOptionInput {
 
   @Field()
   optionDescription!: string;
+
+  @Field()
+  isAnswer!: boolean;
 }

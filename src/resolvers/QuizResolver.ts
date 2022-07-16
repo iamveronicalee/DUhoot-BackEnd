@@ -91,7 +91,7 @@ export class QuizResolver {
         let option = data.options[i];
         await AppDataSource.createQueryBuilder()
           .update(QuestionOption)
-          .set({ optionDescription: option.optionDescription })
+          .set({ optionDescription: option.optionDescription, isAnswer: option.isAnswer })
           .where({ id: option.optionId })
           .execute();
       }
