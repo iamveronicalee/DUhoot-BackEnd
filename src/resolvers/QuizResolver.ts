@@ -93,4 +93,6 @@ export class QuizResolver {
 
     return detail;
   }
+
 }
+
