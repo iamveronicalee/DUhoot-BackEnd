@@ -42,11 +42,11 @@ export class UserResolver {
     return User.find();
   }
 
-  @Query(() => User)
-  getUser() {
-    // let user = authenticateToken(token)
-
-    return User.find();
+  @Mutation(() => User)
+  getUserByUsername(@Arg("username") username : string) {
+    return User.findOne({where : {
+      userName : username
+    }})
   }
 
   @Mutation(() => Boolean)

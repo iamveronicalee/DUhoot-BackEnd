@@ -8,6 +8,8 @@ import { Question } from "../entities/Question";
 import { QuizDetail } from "../entities/QuizDetail";
 import { QuestionOption } from "../entities/QuestionOption";
 import { AppDataSource } from "../data-source";
+import { QuizParticipant } from "../entities/QuizParticipant";
+import { Any } from "typeorm";
 
 @Resolver()
 export class QuizResolver {
@@ -23,7 +25,9 @@ export class QuizResolver {
         createdAt: currentDate,
         updatedAt: currentDate,
         creatorId: creator?.id,
+        isStart: false
       });
+
       await quiz.save();
       return quiz;
     } catch (err) {
@@ -38,6 +42,27 @@ export class QuizResolver {
     if (!quiz) throw new Error("Quiz not found!");
     return quiz;
   }
+
+  @Mutation(()=> [Quiz!])
+  getPersonQuizList(@Arg("userId") userId : number){
+    const quizList = Quiz.find({ where: { creatorId : userId }})
+    return quizList;
+  }
+
+
+
+  @Query(() => String)
+  async getQuizDetailById(@Arg("quizId") quizId: number) {
+    const quizDetails = await AppDataSource.getRepository(QuizDetail)
+    .createQueryBuilder("quizDetail")
+    .leftJoinAndSelect("quizDetail.question", "question")
+    .leftJoinAndSelect("question.optionConnection", "options")
+    .where({quizId: quizId})
+    .getMany();
+    
+    return (JSON.stringify(quizDetails));
+  }
+
 
   @Mutation(() => Boolean)
   async updateQuiz(@Arg("data") data: UpdateQuizInput) {
@@ -63,20 +88,36 @@ export class QuizResolver {
     return true;
   }
 
+  @Mutation(()=> [QuizDetail!])
+  async getAllQuizDetailById(@Arg("quizId") quizId : number){
+
+    let res = await AppDataSource.getRepository(QuizDetail)
+    .createQueryBuilder("quizDetail")
+    .leftJoinAndSelect("quizDetail.question", "question")
+    .where({
+      quizId : quizId
+    }).getMany()
+
+    return res;
+  }
+
   @Mutation(() => QuizDetail)
   async createQuizDetail(
     @Arg("quizId") quizId: number,
     @Arg("data") data: CreateQuestionInput
   ) {
+
     const question = Question.create({
       questionDescription: data.questionDescription,
     });
+    
     await question.save();
 
     const detail = QuizDetail.create({
       quizId: quizId,
-      questionId: question.id,
+      question : question,
     });
+
     await detail.save();
 
     let len = data.options.length;
@@ -90,9 +131,41 @@ export class QuizResolver {
       });
       await option.save();
     }
-
     return detail;
   }
 
+  @Mutation(() => QuizParticipant)
+  async createQuizParticipant(
+    @Arg("quizId") quizId: number,
+    @Arg("participantId") participantId: number
+  ) {
+    const date = new Date();
+    const quizParticipant = QuizParticipant.create({
+      quizId: quizId,
+      participantId: participantId,
+      score: 0,
+      participateDate: date,
+    });
+    await quizParticipant.save();
+  }
+
+  @Mutation(() => String)
+  async updateQuizParticipant(
+    @Arg("quizId") quizId: number,
+    @Arg("participantId") participantId: number,
+    @Arg("score") score: number
+  ) {
+    try {
+      await AppDataSource.createQueryBuilder()
+        .update(QuizParticipant)
+        .set({ score: score })
+        .where({ quizId: quizId, participantId: participantId })
+        .execute();
+    } catch (err) {
+      console.log(err);
+      return "update quiz score error";
+    }
+    return score;
+  }
 }
 

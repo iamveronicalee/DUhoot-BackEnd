@@ -1,7 +1,16 @@
 import { Field, ObjectType } from "type-graphql";
-import { BaseEntity, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from "typeorm";
 import { Quiz } from "./Quiz";
 import { Question } from "./Question";
+import { QuestionOption } from "./QuestionOption";
 
 @ObjectType()
 @Entity("QuizDetail")
@@ -11,8 +20,13 @@ export class QuizDetail extends BaseEntity {
   quizId: number;
 
   @Field()
-  @PrimaryColumn({ name: "question_id" })
+  @PrimaryColumn({name : "question_id"})
   questionId: number;
+
+  @Field(()=> Question)
+  @OneToOne(() => Question, (question) => question.quizDetail)
+  @JoinColumn({name : "question_id"})
+  question: Question;
 
   @Field(() => Quiz)
   quiz!: Quiz;
@@ -20,9 +34,4 @@ export class QuizDetail extends BaseEntity {
   @JoinColumn({ name: "quiz_id" })
   quizConnection!: Promise<Quiz>;
 
-  @Field(() => Question)
-  question!: Question;
-  @ManyToOne(() => Question, (question) => question.detailConnection)
-  @JoinColumn({ name: "question_id" })
-  questionConnection!: Promise<Question>;
 }

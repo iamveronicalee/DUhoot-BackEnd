@@ -23,19 +23,23 @@ export class Quiz extends BaseEntity {
 
   @Field()
   @Column({ name: "quiz_name" })
-  quizName: string;
+  quizName!: string;
 
   @Field()
   @CreateDateColumn({ name: "created_at" })
-  createdAt: Date;
+  createdAt!: Date;
 
   @Field()
   @UpdateDateColumn({ name: "updated_at" })
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @Field()
   @Column({ name: "creator_id" })
   creatorId!: number;
+
+  @Field()
+  @Column({ name: "is_start" })
+  isStart!: boolean;
 
   @Field(() => User)
   creator!: User;

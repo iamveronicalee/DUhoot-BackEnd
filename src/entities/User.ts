@@ -11,6 +11,8 @@ import { QuizParticipant } from "./QuizParticipant";
 
 @ObjectType()
 @Entity("User")
+
+
 export class User extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -18,14 +20,14 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ name: "user_name" })
-  userName: string;
+  userName!: string;
 
   @Field()
   @Column({ name: "user_id" })
-  userId: string;
+  userId!: string;
 
   @Column({ name: "binusian_id" })
-  binusianId: string;
+  binusianId!: string;
 
   @OneToMany(() => Quiz, (quiz) => quiz.creatorConnection)
   quizConnection!: Promise<Quiz[]>;
