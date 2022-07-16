@@ -37,13 +37,16 @@ router.post("/login", async function (req, res) {
       req.body
     )
     .then((response) => {
+      // console.log(response.data.User)
       const username = response.data.User.UserName;
       const userId = response.data.User.UserId;
       const binusianId = response.data.User.BinusianId;
+      const realname = response.data.User.Name 
       const user = {
         username: username,
         userId: userId,
         binusianId: binusianId,
+        realname : realname
       };
 
       if (existUser === null) addNewUser(username, userId, binusianId); // kalo user belum ada di db save ke db
@@ -75,10 +78,12 @@ router.post("/login/lecturer", async function (req, res) {
       const username = response.data.User.UserName;
       const userId = response.data.User.UserId;
       const binusianId = response.data.User.BinusianId;
+      console.log(response.data.User)
       const user = {
         username: username,
         userId: userId,
         binusianId: binusianId,
+        realname : username 
       };
 
       if (existUser === null) addNewUser(username, userId, binusianId); // user belum ada di db save ke db
@@ -183,7 +188,7 @@ async function addNewUser(userName, userId, binusianId) {
   await userRepository.save(newUser);
 
   const savedUsers = await userRepository.find();
-  console.log("All users from the db: ", savedUsers);
+  // console.log("All users from the db: ", savedUsers);
 }
 
 module.exports = router;
