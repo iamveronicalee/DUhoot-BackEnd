@@ -9,7 +9,7 @@ import { QuizDetail } from "../entities/QuizDetail";
 import { QuestionOption } from "../entities/QuestionOption";
 import { AppDataSource } from "../data-source";
 import { QuizParticipant } from "../entities/QuizParticipant";
-import { Any } from "typeorm";
+import { UpdateQuestionInput } from "../inputs/UpdateQuestionInput";
 
 @Resolver()
 export class QuizResolver {
@@ -25,7 +25,7 @@ export class QuizResolver {
         createdAt: currentDate,
         updatedAt: currentDate,
         creatorId: creator?.id,
-        isStart: false
+        isStart: false,
       });
 
       await quiz.save();
@@ -43,26 +43,23 @@ export class QuizResolver {
     return quiz;
   }
 
-  @Mutation(()=> [Quiz!])
-  getPersonQuizList(@Arg("userId") userId : number){
-    const quizList = Quiz.find({ where: { creatorId : userId }})
+  @Mutation(() => [Quiz!])
+  getPersonQuizList(@Arg("userId") userId: number) {
+    const quizList = Quiz.find({ where: { creatorId: userId } });
     return quizList;
   }
-
-
 
   @Query(() => String)
   async getQuizDetailById(@Arg("quizId") quizId: number) {
     const quizDetails = await AppDataSource.getRepository(QuizDetail)
-    .createQueryBuilder("quizDetail")
-    .leftJoinAndSelect("quizDetail.question", "question")
-    .leftJoinAndSelect("question.optionConnection", "options")
-    .where({quizId: quizId})
-    .getMany();
-    
-    return (JSON.stringify(quizDetails));
-  }
+      .createQueryBuilder("quizDetail")
+      .leftJoinAndSelect("quizDetail.question", "question")
+      .leftJoinAndSelect("question.optionConnection", "options")
+      .where({ quizId: quizId })
+      .getMany();
 
+    return JSON.stringify(quizDetails);
+  }
 
   @Mutation(() => Boolean)
   async updateQuiz(@Arg("data") data: UpdateQuizInput) {
@@ -81,6 +78,31 @@ export class QuizResolver {
   }
 
   @Mutation(() => Boolean)
+  async updateQuizDetail(@Arg("data") data: UpdateQuestionInput) {
+    try {
+      await AppDataSource.createQueryBuilder()
+        .update(Question)
+        .set({ questionDescription: data.questionDescription })
+        .where({ id: data.questionId })
+        .execute();
+
+      let len = data.options.length;
+      for (let i = 0; i < len; i++) {
+        let option = data.options[i];
+        await AppDataSource.createQueryBuilder()
+          .update(QuestionOption)
+          .set({ optionDescription: option.optionDescription })
+          .where({ id: option.optionId })
+          .execute();
+      }
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+    return true;
+  }
+
+  @Mutation(() => Boolean)
   async deleteQuiz(@Arg("id") id: number) {
     const quiz = await Quiz.findOne({ where: { id } });
     if (!quiz) throw new Error("Quiz not found!");
@@ -88,15 +110,15 @@ export class QuizResolver {
     return true;
   }
 
-  @Mutation(()=> [QuizDetail!])
-  async getAllQuizDetailById(@Arg("quizId") quizId : number){
-
+  @Mutation(() => [QuizDetail!])
+  async getAllQuizDetailById(@Arg("quizId") quizId: number) {
     let res = await AppDataSource.getRepository(QuizDetail)
-    .createQueryBuilder("quizDetail")
-    .leftJoinAndSelect("quizDetail.question", "question")
-    .where({
-      quizId : quizId
-    }).getMany()
+      .createQueryBuilder("quizDetail")
+      .leftJoinAndSelect("quizDetail.question", "question")
+      .where({
+        quizId: quizId,
+      })
+      .getMany();
 
     return res;
   }
@@ -106,24 +128,20 @@ export class QuizResolver {
     @Arg("quizId") quizId: number,
     @Arg("data") data: CreateQuestionInput
   ) {
-
     const question = Question.create({
       questionDescription: data.questionDescription,
     });
-    
     await question.save();
 
     const detail = QuizDetail.create({
       quizId: quizId,
-      question : question,
+      question: question,
     });
-
     await detail.save();
 
     let len = data.options.length;
     for (let i = 0; i < len; i++) {
       let temp = data.options[i];
-
       const option = QuestionOption.create({
         questionId: question.id,
         optionDescription: temp.optionDescription,
