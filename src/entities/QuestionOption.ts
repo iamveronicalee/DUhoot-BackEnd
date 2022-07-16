@@ -15,7 +15,7 @@ import { QuizDetail } from "./QuizDetail";
 export class QuestionOption extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Field()
   @Column({ name: "question_id" })
@@ -23,11 +23,11 @@ export class QuestionOption extends BaseEntity {
 
   @Field()
   @Column({ name: "option_description" })
-  optionDescription: string;
+  optionDescription!: string;
 
   @Field()
   @Column({ name: "is_answer" })
-  isAnswer: boolean;
+  isAnswer!: boolean;
 
   @Field(() => Question)
   question!: Question;

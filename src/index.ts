@@ -64,7 +64,6 @@ const httpServer = http.createServer(app);
   });
 
   await apolloServer.start();
-
   apolloServer.applyMiddleware({ app });
 
   await new Promise<void>((resolve) =>

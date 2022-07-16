@@ -33,4 +33,5 @@ export class QuizDetail extends BaseEntity {
   @ManyToOne(() => Quiz, (quiz) => quiz.detailConnection)
   @JoinColumn({ name: "quiz_id" })
   quizConnection!: Promise<Quiz>;
+
 }

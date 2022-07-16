@@ -8,6 +8,8 @@ import { Question } from "../entities/Question";
 import { QuizDetail } from "../entities/QuizDetail";
 import { QuestionOption } from "../entities/QuestionOption";
 import { AppDataSource } from "../data-source";
+import { QuizParticipant } from "../entities/QuizParticipant";
+import { Any } from "typeorm";
 
 @Resolver()
 export class QuizResolver {
@@ -23,7 +25,7 @@ export class QuizResolver {
         createdAt: currentDate,
         updatedAt: currentDate,
         creatorId: creator?.id,
-        isStart : false
+        isStart: false
       });
 
       await quiz.save();
@@ -47,6 +49,19 @@ export class QuizResolver {
     return quizList;
   }
 
+
+
+  @Query(() => String)
+  async getQuizDetailById(@Arg("quizId") quizId: number) {
+    const quizDetails = await AppDataSource.getRepository(QuizDetail)
+    .createQueryBuilder("quizDetail")
+    .leftJoinAndSelect("quizDetail.question", "question")
+    .leftJoinAndSelect("question.optionConnection", "options")
+    .where({quizId: quizId})
+    .getMany();
+    
+    return (JSON.stringify(quizDetails));
+  }
 
 
   @Mutation(() => Boolean)
@@ -116,7 +131,40 @@ export class QuizResolver {
       });
       await option.save();
     }
-
     return detail;
+  }
+
+  @Mutation(() => QuizParticipant)
+  async createQuizParticipant(
+    @Arg("quizId") quizId: number,
+    @Arg("participantId") participantId: number
+  ) {
+    const date = new Date();
+    const quizParticipant = QuizParticipant.create({
+      quizId: quizId,
+      participantId: participantId,
+      score: 0,
+      participateDate: date,
+    });
+    await quizParticipant.save();
+  }
+
+  @Mutation(() => String)
+  async updateQuizParticipant(
+    @Arg("quizId") quizId: number,
+    @Arg("participantId") participantId: number,
+    @Arg("score") score: number
+  ) {
+    try {
+      await AppDataSource.createQueryBuilder()
+        .update(QuizParticipant)
+        .set({ score: score })
+        .where({ quizId: quizId, participantId: participantId })
+        .execute();
+    } catch (err) {
+      console.log(err);
+      return "update quiz score error";
+    }
+    return score;
   }
 }
