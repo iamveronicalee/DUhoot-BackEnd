@@ -103,10 +103,77 @@ export class QuizResolver {
   }
 
   @Mutation(() => Boolean)
-  async deleteQuiz(@Arg("id") id: number) {
-    const quiz = await Quiz.findOne({ where: { id } });
-    if (!quiz) throw new Error("Quiz not found!");
-    await quiz.remove();
+  async deleteQuiz(@Arg("quizId") quizId: number) {
+    try {
+      let questions = await AppDataSource.getRepository(QuizDetail)
+        .createQueryBuilder("question")
+        .where({ quizId: quizId })
+        .getMany();
+
+      let len = questions.length;
+      for (let i = 0; i < len; i++) {
+        let temp = questions[i];
+
+        // delete semua option yang dimiliki question
+        await AppDataSource.createQueryBuilder()
+          .delete()
+          .from(QuestionOption)
+          .where({ questionId: temp.questionId })
+          .execute();
+
+        // delete question yang di QuizDetail
+        await AppDataSource.createQueryBuilder()
+          .delete()
+          .from(QuizDetail)
+          .where({ questionId: temp.questionId })
+          .execute();
+
+        // delete question sendiri
+        await AppDataSource.createQueryBuilder()
+          .delete()
+          .from(Question)
+          .where({ id: temp.questionId })
+          .execute();
+      }
+      await AppDataSource.createQueryBuilder()
+        .delete()
+        .from(Quiz)
+        .where({ id: quizId })
+        .execute();
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+    return true;
+  }
+
+  @Mutation(() => Boolean)
+  async deleteQuestion(@Arg("questionId") questionId: number) {
+    try {
+      // delete semua option yang dimiliki question
+      await AppDataSource.createQueryBuilder()
+        .delete()
+        .from(QuestionOption)
+        .where({ questionId: questionId })
+        .execute();
+
+      // delete question yang di QuizDetail
+      await AppDataSource.createQueryBuilder()
+        .delete()
+        .from(QuizDetail)
+        .where({ questionId: questionId })
+        .execute();
+
+      // delete question sendiri
+      await AppDataSource.createQueryBuilder()
+        .delete()
+        .from(Question)
+        .where({ id: questionId })
+        .execute();
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
     return true;
   }
 
