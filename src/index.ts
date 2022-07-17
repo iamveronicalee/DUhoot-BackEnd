@@ -67,7 +67,7 @@ const httpServer = http.createServer(app);
 
 
   apolloServer.applyMiddleware({ app, cors: corsOptions });
-  // apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app });
 
 
   await new Promise<void>((resolve) =>
