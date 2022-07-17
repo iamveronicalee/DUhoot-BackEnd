@@ -1,3 +1,4 @@
+import { BlobOptions } from "buffer";
 import { Field, Int, ObjectType } from "type-graphql";
 import {
   Entity,
@@ -41,6 +42,10 @@ export class Quiz extends BaseEntity {
   @Column({ name: "is_start" })
   isStart!: boolean;
 
+  @Field()
+  @Column({name : 'is_finished'})
+  isFinished! : boolean;
+
   @Field(() => User)
   creator!: User;
   @ManyToOne(() => User, (creator) => creator.quizConnection)
@@ -50,9 +55,13 @@ export class Quiz extends BaseEntity {
   @OneToMany(() => QuizDetail, (detail) => detail.quizConnection)
   detailConnection!: Promise<QuizDetail[]>;
 
+
+
+  @Field(()=> [QuizParticipant], {nullable : true})
   @OneToMany(
     () => QuizParticipant,
-    (quizParticipant) => quizParticipant.quizConnection
+    quizParticipant => quizParticipant.quizConnection
   )
-  quizParticipantConnection!: Promise<QuizParticipant[]>;
+  // @JoinColumn({ name : 'id'})
+  quizParticipantConnection: Promise<QuizParticipant[]>;
 }

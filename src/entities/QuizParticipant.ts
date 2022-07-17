@@ -20,7 +20,7 @@ export class QuizParticipant extends BaseEntity {
 
   @Field()
   @Column({ name: "quiz_id" })
-  quizId!: number;
+  quizId: number;
 
   @Field()
   @Column({ name: "participant_id" })
@@ -34,15 +34,14 @@ export class QuizParticipant extends BaseEntity {
   @CreateDateColumn({ name: "participate_date" })
   participateDate!: Date;
 
-  @Field(() => Quiz)
-  quiz!: Quiz;
-  @ManyToOne(() => Quiz, (quiz) => quiz.quizParticipantConnection)
-  @JoinColumn({ name: "quiz_id" })
-  quizConnection!: Promise<Quiz>;
-
-  @Field(() => User)
-  participant!: User;
-  @ManyToOne(() => User, (participant) => participant.quizParticipantConnection)
+  @Field(() => User, {nullable : true})
+  @ManyToOne(() => User, participant => participant.quizParticipantConnection)
   @JoinColumn({ name: "participant_id" })
   participantConnection!: Promise<User>;
+
+  @Field(() => Quiz, {nullable : true})
+  @ManyToOne(() => Quiz, quiz => quiz.quizParticipantConnection)
+  @JoinColumn({ name: "quiz_id" })
+  quizConnection!: Promise<Quiz>;
+  
 }
