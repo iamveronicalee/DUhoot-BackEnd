@@ -67,8 +67,6 @@ const httpServer = http.createServer(app);
   await apolloServer.start();
 
   apolloServer.applyMiddleware({ app, cors: corsOptions });
-  // apolloServer.applyMiddleware({ app });
-
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 9000 }, resolve)
   );

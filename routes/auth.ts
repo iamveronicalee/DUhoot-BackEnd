@@ -67,7 +67,7 @@ router.post("/login", async function (req, res) {
 
 router.post("/login/lecturer", async function (req, res) {
   const existUser = await userRepository.findOneBy({
-    userName: req.body.username,
+    userName: req.body.username.toUpperCase(),
   });
   axios
     .post(
