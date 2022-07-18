@@ -15,7 +15,7 @@ import { sendRefreshToken } from "../sendRefreshToken";
 import {
   generateAccessToken,
   generateRefreshAccessToken,
-} from "../../routes/auth";
+} from "../generateToken";
 
 @ObjectType()
 class LoginResponse {
@@ -43,10 +43,12 @@ export class UserResolver {
   }
 
   @Mutation(() => User)
-  getUserByUsername(@Arg("username") username : string) {
-    return User.findOne({where : {
-      userName : username
-    }})
+  getUserByUsername(@Arg("username") username: string) {
+    return User.findOne({
+      where: {
+        userName: username,
+      },
+    });
   }
 
   @Mutation(() => Boolean)
@@ -83,10 +85,9 @@ export class UserResolver {
     if (!user) {
       throw new Error("could not find user");
     }
-
+    console.log(user);
     // login successfully
     sendRefreshToken(res, generateRefreshAccessToken(user));
-
     return {
       accessToken: generateAccessToken(user),
     };

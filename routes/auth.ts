@@ -4,10 +4,14 @@ const {} = require("express");
 var express = require("express");
 var router = express.Router();
 const app = express();
-import { verify, sign } from "jsonwebtoken";
+import { verify} from "jsonwebtoken";
 import { User } from "../src/entities/User";
 import { sendRefreshToken } from "../src/sendRefreshToken";
 import { AppDataSource } from "../src/data-source";
+import {
+  generateAccessToken,
+  generateRefreshAccessToken,
+} from "../src/generateToken";
 
 app.use(express.json());
 
@@ -41,21 +45,21 @@ router.post("/login", async function (req, res) {
       const username = response.data.User.UserName;
       const userId = response.data.User.UserId;
       const binusianId = response.data.User.BinusianId;
-      const realname = response.data.User.Name 
+      const realname = response.data.User.Name;
+      if (existUser === null) addNewUser(username, userId, binusianId); // kalo user belum ada di db save ke db
+
       const user = {
         username: username,
         userId: userId,
         binusianId: binusianId,
-        realname : realname
+        realname: realname,
       };
 
-      if (existUser === null) addNewUser(username, userId, binusianId); // kalo user belum ada di db save ke db
-
       const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshAccessToken(user);
-      console.log("login" + accessToken);
-      refreshTokens.push(refreshToken);
-      res.json({ accessToken: accessToken, refreshToken: refreshToken });
+      res.json({ accessToken: accessToken });
+      // const refreshToken = generateRefreshAccessToken(user);
+      // refreshTokens.push(refreshToken);
+      // res.json({ accessToken: accessToken, refreshToken: refreshToken });
     })
     .catch((error) => {
       res.send(error);
@@ -78,34 +82,19 @@ router.post("/login/lecturer", async function (req, res) {
       const username = response.data.User.UserName;
       const userId = response.data.User.UserId;
       const binusianId = response.data.User.BinusianId;
-      console.log(response.data.User)
+      if (existUser === null) addNewUser(username, userId, binusianId); // user belum ada di db save ke db
+
       const user = {
         username: username,
         userId: userId,
         binusianId: binusianId,
-        realname : username 
+        realname: username,
       };
-
-      if (existUser === null) addNewUser(username, userId, binusianId); // user belum ada di db save ke db
-
       const accessToken = generateAccessToken(user);
-      const refreshToken = generateRefreshAccessToken(user);
-      refreshTokens.push(refreshToken);
-      res.json({ accessToken: accessToken, refreshToken: refreshToken });
-    })
-    .catch((error) => {
-      res.send(error);
-    });
-});
-
-router.post("/getsalt", function (req, res) {
-  let lectId = req.body.username;
-  let link = "https://bluejack.binus.ac.id/lapi/api/Account/Salt/" + lectId;
-
-  axios
-    .get(link)
-    .then((response) => {
-      res.json(response.data);
+      res.json({ accessToken: accessToken });
+      // const refreshToken = generateRefreshAccessToken(user);
+      // refreshTokens.push(refreshToken);
+      // res.json({ accessToken: accessToken, refreshToken: refreshToken });
     })
     .catch((error) => {
       res.send(error);
@@ -171,14 +160,6 @@ export function authenticateToken(req, res, next) {
   });
 }
 
-export function generateAccessToken(user) {
-  return sign(user, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "60m" });
-}
-
-export function generateRefreshAccessToken(user) {
-  return sign(user, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: "7d" });
-}
-
 async function addNewUser(userName, userId, binusianId) {
   const newUser = new User();
   newUser.userId = userId;
@@ -186,8 +167,7 @@ async function addNewUser(userName, userId, binusianId) {
   newUser.userName = userName;
 
   await userRepository.save(newUser);
-
-  const savedUsers = await userRepository.find();
+  // const savedUsers = await userRepository.find();
   // console.log("All users from the db: ", savedUsers);
 }
 
