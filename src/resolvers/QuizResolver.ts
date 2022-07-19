@@ -62,6 +62,22 @@ export class QuizResolver {
     return JSON.stringify(quizDetails);
   }
 
+  @Mutation(()=> Boolean)
+  async updateQuizStatus(@Arg("quizId") quizId : number){
+    try {
+      const currentDate = new Date();
+      await AppDataSource.createQueryBuilder()
+        .update(Quiz)
+        .set({ isFinished : true })
+        .where({ id: quizId })
+        .execute();
+    } catch (err) {
+      // console.log(err);
+      return false;
+    }
+    return true;
+  }
+
   @Mutation(() => Boolean)
   async updateQuiz(@Arg("data") data: UpdateQuizInput) {
     try {
