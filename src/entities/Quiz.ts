@@ -43,8 +43,8 @@ export class Quiz extends BaseEntity {
   isStart!: boolean;
 
   @Field()
-  @Column({name : 'is_finished'})
-  isFinished! : boolean;
+  @Column({ name: "is_finished" })
+  isFinished!: boolean;
 
   @Field(() => User)
   creator!: User;
@@ -55,12 +55,10 @@ export class Quiz extends BaseEntity {
   @OneToMany(() => QuizDetail, (detail) => detail.quizConnection)
   detailConnection!: Promise<QuizDetail[]>;
 
-
-
-  @Field(()=> [QuizParticipant], {nullable : true})
+  @Field(() => [QuizParticipant], { nullable: true })
   @OneToMany(
     () => QuizParticipant,
-    quizParticipant => quizParticipant.quizConnection
+    (quizParticipant) => quizParticipant.quizConnection
   )
   // @JoinColumn({ name : 'id'})
   quizParticipantConnection: Promise<QuizParticipant[]>;
