@@ -10,6 +10,7 @@
   "dependencies": {
     "@react-navigation/native": "^6.0.11",
     "@types/node": "^18.0.0",
+    "apollo-fetch": "^0.7.0",
     "apollo-server": "^3.8.2",
     "apollo-server-express": "^3.8.2",
     "axios": "^0.26.1",
