@@ -78,6 +78,7 @@ export class QuizResolver {
     return true;
   }
 
+
   @Mutation(() => Boolean)
   async updateQuiz(@Arg("data") data: UpdateQuizInput) {
     try {
@@ -254,7 +255,8 @@ export class QuizResolver {
   @Mutation(() => Boolean)
   async createQuizParticipant(
     @Arg("quizId") quizId: number,
-    @Arg("participantId") participantId: number
+    @Arg("participantId") participantId: number,
+    @Arg("score") score : number
   ) {
 
     let quiz = await Quiz.findOne({
@@ -273,7 +275,7 @@ export class QuizResolver {
     const quizParticipant = QuizParticipant.create({
       quizId: quizId,
       participantId: participantId,
-      score: 0,
+      score: score,
       participateDate: date,
     });
     await quizParticipant.save();
