@@ -284,3 +284,4 @@ export class QuizResolver {
     return score;
   }
 }
+

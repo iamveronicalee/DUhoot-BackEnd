@@ -35,9 +35,11 @@ router.get("/user", (req, res, next) => {
 });
 
 router.post("/login", async function (req, res) {
+  
   const existUser = await userRepository.findOneBy({
     userName: req.body.username,
   });
+
   axios
     .post(
       "https://bluejack.binus.ac.id/lapi/api/Account/LogOnBinusian",
