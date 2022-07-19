@@ -23,12 +23,12 @@ var app = express();
 const httpServer = http.createServer(app);
 
 (async () => {
-  // var corsOptions = {
-  //   origin: "http://localhost:3000",
-  //   credentials: true,
-  //   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
-  // };
-  // app.use(cors(corsOptions));
+  var corsOptions = {
+    origin: "http://localhost:3000",
+    credentials: true,
+    optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  };
+  app.use(cors(corsOptions));
 
   AppDataSource.initialize()
     .then(() => {
@@ -65,9 +65,8 @@ const httpServer = http.createServer(app);
 
   await apolloServer.start();
 
-  // apolloServer.applyMiddleware({ app, cors: corsOptions });
-  apolloServer.applyMiddleware({ app });
 
+  apolloServer.applyMiddleware({ app, cors: corsOptions });
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: 9000 }, resolve)
   );
