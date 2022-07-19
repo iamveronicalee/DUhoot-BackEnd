@@ -55,8 +55,6 @@ export class Quiz extends BaseEntity {
   @OneToMany(() => QuizDetail, (detail) => detail.quizConnection)
   detailConnection!: Promise<QuizDetail[]>;
 
-
-
   @Field(()=> [QuizParticipant], {nullable : true})
   @OneToMany(
     () => QuizParticipant,
